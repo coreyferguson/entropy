@@ -3,17 +3,40 @@
 		<title>entropy</title>
 		<script src='bower_components/requirejs/require.js'></script>
 		<script src='js/index.js'></script>
+
+		<link rel='stylesheet' type='text/css' href='index.css'>
 	</head>
 
 	<body>
-		<h1>entropy</h1>
-		<svg id='container' width='90%' height='90%'>
-			<!-- Box border -->
-			<rect x='0' y='0' width='100%' height='100%' style='fill:white;stroke:black;stroke-width:20;'></rect>
-			<!-- Wall in middle -->
-			<rect x='50%' y='0' width='5' height='100%' style='fill:white;stroke:black;stroke-width:10;'></rect>
-			<!-- Slit in wall -->
-			<rect x='45%' y='45%' width='10%' height='10%' style='fill:white;stroke:white;stroke-width:10;'></rect>
-		</svg>
+		<div id='leftPane'>
+			<p id='atomsOnLeft'> Atoms on left: <span id='numberOfAtomsOnLeft'></span></p>
+			<p id='atomsOnRight'> Atoms on right: <span id='numberOfAtomsOnRight'></span></p>
+			<svg id='container'>
+				<!-- Box border -->
+				<rect x='0' y='0' width='100%' height='100%' style='fill:white;stroke:black;stroke-width:20;'></rect>
+				<!-- Wall in middle -->
+				<rect x='50%' y='0' width='5' height='100%' style='fill:white;stroke:black;stroke-width:10;'></rect>
+				<!-- Slit in wall -->
+				<rect x='45%' y='45%' width='10%' height='10%' style='fill:white;stroke:white;stroke-width:10;'></rect>
+			</svg>
+		</div>
+
+		<div id='rightPane'>
+			<svg id='configurations'>
+			</svg>
+<!-- 
+			<p>
+				Number of configurations:
+				<span id='numberOfConfigurations'>
+					<span class='base'></span> * 10^<span class='exponent'></span>
+				</span>
+			</p>
+			<p>
+				Max number of configurations:
+				<span id='totalNumberOfConfigurations'>
+					<span class='base'></span> * 10^<span class='exponent'></span>
+				</span>
+			</p> -->
+		</div>
 	</body>
 </html>

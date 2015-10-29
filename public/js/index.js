@@ -1,9 +1,10 @@
 require(['js/requirejs-config'], function(config) {
 	require([
 		'd3',
+		'mathjs',
 		'node-uuid',
 		'js/entropy-config'
-	], function(d3, uuid, config) {
+	], function(d3, math, uuid, config) {
 
 		var container; // container of atoms
 		var atoms; // array of atoms within container
@@ -12,18 +13,88 @@ require(['js/requirejs-config'], function(config) {
 		var containerWidth; // in pixels
 		var containerHeight; // in pixels
 
+		var configurationsSvg;
+		var configurationsProgress;
+
+		var entropy;
+		var lastEntropy;
+		var entropyChangeColor;
+
 		init();
 		setTimeout(loop, config.loopTimeInMilliseconds);
 
 		function loop() {
 			moveAtoms();
+			calculateNumberOfAtomsOnEachSide();
+			updateConfigurations();
 			setTimeout(loop, config.loopTimeInMilliseconds);
 		}
 
 		function init() {
 			container = d3.select('#container');
 			atoms = [];
+			initConfigurations();
 			fillContainerWithGas();
+			calculateNumberOfAtomsOnEachSide();
+		}
+
+		function initConfigurations() {
+			var configurationsSvg = d3.select('#configurations');
+			svgWidth = configurationsSvg.node().getBoundingClientRect().width;
+			svgHeight = configurationsSvg.node().getBoundingClientRect().height;
+			configurationsProgress = configurationsSvg.append('rect')
+				.attr('x', 0)
+				.attr('y', svgHeight)
+				.attr('width', '100%')
+				.attr('height', '0')
+				.attr('fill', 'blue')
+			configurationsSvg.append('text')
+				.attr('x', -svgHeight/2)
+				.attr('y', svgWidth/2)
+				.attr('transform', 'rotate(270 0,0)')
+				.attr('alignment-baseline', 'middle')
+				.attr('text-anchor', 'middle')
+				.attr('style', 'font-size: 3em')
+				.html('% of total entropy');
+		}
+
+		function calculateEntropyChange() {
+			// calculate entropy
+			var atomsOnLeft = 0;
+			var atomsOnRight = 0;
+			for (var c=0; c<atoms.length; c++) {
+				if (atoms[c].side === 'left') {
+					atomsOnLeft++;
+				} else {
+					atomsOnRight++;
+				}
+			}
+			var smaller;
+			if (atomsOnLeft < atomsOnRight) {
+				smaller = atomsOnLeft
+			} else {
+				smaller = atomsOnRight;
+			}
+			entropy = (smaller * svgHeight) / (atoms.length/2);
+
+			// calculate entropy change color
+			if (lastEntropy == null || entropy > lastEntropy) {
+				entropyChangeColor = config.entropyIncreaseColor;
+			} else if (entropy < lastEntropy) {
+				entropyChangeColor = config.entropyDecreaseColor;
+			} else {
+				entropyChangeColor = config.entropyStagnantColor;
+			}
+
+			// reset lastEntropy for next iteration
+			lastEntropy = entropy;
+
+		}
+
+		function updateConfigurations() {
+			var transition = configurationsProgress.transition().ease('elastic').duration(config.loopTimeInMilliseconds)
+				.attr('fill', entropyChangeColor)
+				.attr('y', svgHeight - entropy).attr('height', entropy);
 		}
 
 		/**
@@ -34,7 +105,6 @@ require(['js/requirejs-config'], function(config) {
 			// that will fit within the current container.
 			containerWidth = container.node().getBoundingClientRect().width;
 			containerHeight = container.node().getBoundingClientRect().height;
-			console.info('container dimensions: ', containerWidth, containerHeight);
 			rows = Math.floor(( 
 				(containerHeight - config.containerBuffer*2 - config.atomPadding*2) / 
 				(config.atomPadding*2) 
@@ -43,9 +113,7 @@ require(['js/requirejs-config'], function(config) {
 				(containerWidth/2 - config.containerBuffer*2 - config.atomPadding*2) / 
 				(config.atomPadding*2) 
 			) + 1);
-			console.info('rows, columns: ', rows, columns);
 			var totalAtoms = rows * columns;
-			console.info('totalAtoms: ', totalAtoms);
 
 			// Fill container with all atoms on left side (lowest possible entropy)
 			// First, create atoms
@@ -59,7 +127,7 @@ require(['js/requirejs-config'], function(config) {
 				.attr('cx', atomX)
 				.attr('cy', atomY)
 				.attr('fill', '#fff')
-			circle.transition().ease('elastic', 1, 2).duration(1000)
+			circle.transition().ease('elastic', 1, 2).duration(config.loopTimeInMilliseconds/2)
 				.attr('r', config.atomRadius)
 				.attr('fill', '#000');
 		}
@@ -81,11 +149,12 @@ require(['js/requirejs-config'], function(config) {
 					atom.moving = false;
 				}
 			}
+			calculateEntropyChange();
 			var circles = container.selectAll('circle').data(atoms, function(atom) { return atom.id; });
-			circles.transition()//.ease('elastic', 1, 2).duration(1000)
+			circles.transition().duration(config.loopTimeInMilliseconds/4)
 				.attr('fill', function(atom) {
 					if (atom.moving) {
-						return '#f00';
+						return entropyChangeColor;
 					} else {
 						return '#000';
 					}
@@ -104,7 +173,7 @@ require(['js/requirejs-config'], function(config) {
 						return atomY(atom, index);
 					}
 				})
-				.transition()//.ease('elastic', 1, 2).duration(1000)
+				.transition().duration(config.loopTimeInMilliseconds/4)
 				.attr('cx', atomX)
 				.attr('cy', atomY)
 		}
@@ -137,6 +206,51 @@ require(['js/requirejs-config'], function(config) {
 		function atomY(atom, index) {
 			return config.containerBuffer + config.atomPadding + 2*config.atomPadding*(index%rows);
 		}
+
+		function calculateNumberOfAtomsOnEachSide() {
+			var atomsOnLeft = 0;
+			var atomsOnRight = 0;
+			for (var c=0; c<atoms.length; c++) {
+				if (atoms[c].side === 'left') {
+					atomsOnLeft++;
+				} else {
+					atomsOnRight++;
+				}
+			}
+			d3.select('#numberOfAtomsOnLeft').html(atomsOnLeft);
+			d3.select('#numberOfAtomsOnRight').html(atomsOnRight);
+		}
+
+		// function calculateTotalNumberOfConfigurations() {
+		// 	var totalNumberOfConfigurations = math.pow(2, atoms.length);
+		// 	var stringValue = totalNumberOfConfigurations.toExponential() + '';
+		// 	var regexResults = stringValue.match(/(\d).*?e\+(\d+)/);
+		// 	var base = regexResults[1];
+		// 	var exponent = regexResults[2];
+		// 	d3.select('#totalNumberOfConfigurations .base').html(base);
+		// 	d3.select('#totalNumberOfConfigurations .exponent').html(exponent);
+		// }
+
+		// /**
+		//  * Calculate number of configurations that support this number of atoms on each side.
+		//  * Uses "n choose k" formula: http://www.mathsisfun.com/pascals-triangle.html
+		//  */
+		// function calculateNumberOfConfigurations() {
+		// 	var k = 0;
+		// 	for (var c=0; c<atoms.length; c++) {
+		// 		if (atoms[c].side === 'left') {
+		// 			k++;
+		// 		}
+		// 	}
+		// 	var n = atoms.length;
+		// 	var numberOfConfigurations = math.combinations(n, k);
+		// 	var stringValue = numberOfConfigurations.toExponential() + '';
+		// 	var regexResults = stringValue.match(/(\d).*?e\+(\d+)/);
+		// 	var base = regexResults[1];
+		// 	var exponent = regexResults[2];
+		// 	d3.select('#numberOfConfigurations .base').html(base);
+		// 	d3.select('#numberOfConfigurations .exponent').html(exponent);
+		// }
 
 	});
 });

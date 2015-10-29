@@ -4,6 +4,7 @@
   "dependencies": {
     "d3": "~3.5.6",
     "node-uuid": "~1.4.3",
-    "requirejs": "~2.1.20"
+    "requirejs": "~2.1.20",
+    "mathjs": "~2.4.0"
   }
 }
