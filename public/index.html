@@ -1,24 +1,19 @@
 <html>
-
 	<head>
-		<title>Entropy</title>
-		<script src='lib/d3/d3.js'></script>
+		<title>entropy</title>
+		<script src='bower_components/requirejs/require.js'></script>
+		<script src='js/index.js'></script>
 	</head>
 
 	<body>
-		<h1>Entropy</h1>
-		<svg id='boxLeft' width='250' height='500'>
+		<h1>entropy</h1>
+		<svg id='container' width='90%' height='90%'>
 			<!-- Box border -->
 			<rect x='0' y='0' width='100%' height='100%' style='fill:white;stroke:black;stroke-width:20;'></rect>
-			<!-- Gap on right border -->
-			<rect x='240' y='245' width='20' height='10' style='fill:white;stroke:white;stroke-width:20;'></rect>
-		</svg><svg id='boxRight' width='250' height='500'>
-			<rect x='0' y='0' width='100%' height='100%' style='fill:white;stroke:black;stroke-width:20;'></rect>
-			<!-- Gap on left border -->
-			<rect x='-10' y='245' width='20' height='10' style='fill:white;stroke:white;stroke-width:20;'></rect>
+			<!-- Wall in middle -->
+			<rect x='50%' y='0' width='5' height='100%' style='fill:white;stroke:black;stroke-width:10;'></rect>
+			<!-- Slit in wall -->
+			<rect x='45%' y='45%' width='10%' height='10%' style='fill:white;stroke:white;stroke-width:10;'></rect>
 		</svg>
-		
-		<script src='index.js'></script>
 	</body>
-
 </html>

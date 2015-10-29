@@ -1,0 +1,14 @@
+{
+  "generator-express-requirejs": {
+    "templateModel": {
+      "project": {
+        "name": "entropy"
+      },
+      "environment": {
+        "isGitAvailable": true,
+        "isGruntAvailable": true,
+        "isGruntBumpAvailable": true
+      }
+    }
+  }
+}
