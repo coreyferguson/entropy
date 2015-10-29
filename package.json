@@ -1,6 +1,6 @@
 {
   "name": "entropy",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Demonstration of entropy using thought experiment. Two boxes separated by small slit. Given a percent chance for each atom to to cross to other box, boxes will inevitably end up with same number of atoms on each side.",
   "main": "app.js",
   "author": "Corey Ferguson <corey.t.ferguson@gmail.com>",
