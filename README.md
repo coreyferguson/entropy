@@ -12,6 +12,6 @@ For more details, see [Entropy - An explanation of the app](documentation)
 ```
 git clone git@github.com:coreyferguson/entropy.git
 cd entropy
-npm install
+npm install && bower install
 node app.js
 ```

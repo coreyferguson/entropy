@@ -221,36 +221,5 @@ require(['js/requirejs-config'], function(config) {
 			d3.select('#numberOfAtomsOnRight').html(atomsOnRight);
 		}
 
-		// function calculateTotalNumberOfConfigurations() {
-		// 	var totalNumberOfConfigurations = math.pow(2, atoms.length);
-		// 	var stringValue = totalNumberOfConfigurations.toExponential() + '';
-		// 	var regexResults = stringValue.match(/(\d).*?e\+(\d+)/);
-		// 	var base = regexResults[1];
-		// 	var exponent = regexResults[2];
-		// 	d3.select('#totalNumberOfConfigurations .base').html(base);
-		// 	d3.select('#totalNumberOfConfigurations .exponent').html(exponent);
-		// }
-
-		// /**
-		//  * Calculate number of configurations that support this number of atoms on each side.
-		//  * Uses "n choose k" formula: http://www.mathsisfun.com/pascals-triangle.html
-		//  */
-		// function calculateNumberOfConfigurations() {
-		// 	var k = 0;
-		// 	for (var c=0; c<atoms.length; c++) {
-		// 		if (atoms[c].side === 'left') {
-		// 			k++;
-		// 		}
-		// 	}
-		// 	var n = atoms.length;
-		// 	var numberOfConfigurations = math.combinations(n, k);
-		// 	var stringValue = numberOfConfigurations.toExponential() + '';
-		// 	var regexResults = stringValue.match(/(\d).*?e\+(\d+)/);
-		// 	var base = regexResults[1];
-		// 	var exponent = regexResults[2];
-		// 	d3.select('#numberOfConfigurations .base').html(base);
-		// 	d3.select('#numberOfConfigurations .exponent').html(exponent);
-		// }
-
 	});
 });
